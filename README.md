@@ -4,6 +4,8 @@ Implements the Mapfish print protocol allowing a Leaflet map to be printed using
 
 This plugin is inspired by the printing features of the [GeoExt]( http://geoext.org/lib/GeoExt/data/PrintProvider.html) library. It also borrows from the visual style of the [Leaflet.draw](https://github.com/Leaflet/Leaflet.draw) plugin.
 
+See the [demo](http://aratcliffe.github.io/Leaflet.print/examples/index.html).
+
 *Requires Leaflet 0.6.0 or newer and jQuery.*
 
 ##Using the plugin
