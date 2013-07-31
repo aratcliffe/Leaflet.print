@@ -40,6 +40,7 @@ Print Provider Options:
 | proxy | String | `undefined` | Url for a local resource that will proxy the request for the print service. The print service url will be passed as the "url" parameter on the request.
 | method| String | `'POST'` | The HTTP method to use to request the printed map.
 | autoLoad | Bool | `false` | If true the print provider will load the capabilities document upon instantiation. Cannot be used with the "capabilities" option.
+| autoOpen | Bool | `true` | If true the printed map will be automatically opened. Applies to POST requests only.
 | capabilities | Object | `undefined` | The capabilities of the print service. Only required if `url` is not provided. This is the object returned by the "info.json" endpoint of the print service, and is usually obtained by including a script tag pointing to `http://path/to/mapfish/print/info.json?var=myvar` in the head of the html  document.
 | outputFormat | String | `'pdf'` | The document format for the printed map.
 | outputFilename | String | `'leaflet-map'` | The filename for the printed map.
@@ -117,7 +118,7 @@ Fired immediately after the printed map has been requested if using HTTP GET or 
 | Property | Type | Description
 | --- | --- | ---
 | provider | L.print.Provider | The print provider.
-| map | [L.Map](http://leafletjs.com/reference.html#map-class) | The map that was printed.
+| response | Object | The reponse object returned by the print service. The url for the generated map is accessed though the `getURL` property.
 
 ####printexception
 

@@ -1,13 +1,5 @@
 /* global L:false, $:false */
 
-/*
- * Limitations:
- * - dashArray style cannot be easily mapped onto OL strokeDashstyle constants so is not supported
- * - Marker shadow is not drawn
- * - Circle and CircleMarker layers are rendered as points
- * - Rectangle layer does not provide a toGeoJSON() method so is not supported
- */
-
 L.print = L.print || {};
 
 L.print.Provider = L.Class.extend({
@@ -25,6 +17,7 @@ L.print.Provider = L.Class.extend({
 
 	options: {
 		autoLoad: false,
+		autoOpen: true,
 		outputFormat: 'pdf',
 		outputFilename: 'leaflet-map',
 		method: 'POST',
@@ -496,10 +489,12 @@ L.print.Provider = L.Class.extend({
 	onPrintSuccess: function (response) {
 		var url = response.getURL + (L.Browser.ie ? '?inline=true' : '');
 
-		if (L.Browser.ie) {
-			window.open(url);
-		} else {
-			window.location.href = url;
+		if (this.options.autoOpen) {
+			if (L.Browser.ie) {
+				window.open(url);
+			} else {
+				window.location.href = url;
+			}
 		}
 		this.fire('print', {
 			provider: this,
