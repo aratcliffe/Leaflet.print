@@ -156,9 +156,12 @@ Fired when the provider's `rotation` value is changed via `setRotation()`.
 | provider | L.print.Provider | The print provider.
 | rotation | Number | The new rotation value.
 
-### Limitations
+##Limitations
 
 * dashArray style cannot be easily mapped onto OpenLayers `strokeDashstyle` constants so is not supported.
 * `Marker` shadow is not drawn.
 * `Circle` and `CircleMarker` layers are rendered as points as that's the geometry that their `toGeoJSON()` method returns.
 * Rectangle layer does not provide a `toGeoJSON()` method so is not supported.
+
+##License
+This software is released under the [MIT licence](http://www.opensource.org/licenses/mit-license.php).
