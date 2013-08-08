@@ -5,14 +5,6 @@
 (function (window, document, undefined) {
 /* global L:false, $:false */
 
-/*
- * Limitations:
- * - dashArray style cannot be easily mapped onto OL strokeDashstyle constants so is not supported
- * - Marker shadow is not drawn
- * - Circle and CircleMarker layers are rendered as points
- * - Rectangle layer does not provide a toGeoJSON() method so is not supported
- */
-
 L.print = L.print || {};
 
 L.print.Provider = L.Class.extend({
@@ -30,6 +22,7 @@ L.print.Provider = L.Class.extend({
 
 	options: {
 		autoLoad: false,
+		autoOpen: true,
 		outputFormat: 'pdf',
 		outputFilename: 'leaflet-map',
 		method: 'POST',
@@ -81,7 +74,7 @@ L.print.Provider = L.Class.extend({
 			type: 'GET',
 			dataType: 'json',
 			url: url,
-			success: $.proxy(this.onCapabilitiesLoad, this)
+			success: L.Util.bind(this.onCapabilitiesLoad, this)
 		});
 	},
 
@@ -134,8 +127,8 @@ L.print.Provider = L.Class.extend({
 				dataType: 'json',
 				url: url,
 				data: jsonData,
-				success: $.proxy(this.onPrintSuccess, this),
-				error: $.proxy(this.onPrintError, this)
+				success: L.Util.bind(this.onPrintSuccess, this),
+				error: L.Util.bind(this.onPrintError, this)
 			});
 		}
 
@@ -357,16 +350,16 @@ L.print.Provider = L.Class.extend({
 					if (feature instanceof L.Marker) {
 						var icon = feature.options.icon,
 						    iconUrl = icon.options.iconUrl || L.Icon.Default.imagePath + '/marker-icon.png',
-						    iconSize = icon.options.iconSize,
-						    iconAnchor = icon.options.iconAnchor,
+						    iconSize = L.Util.isArray(icon.options.iconSize) ? new L.Point(icon.options.iconSize[0], icon.options.iconSize[1]) : icon.options.iconSize,
+						    iconAnchor = L.Util.isArray(icon.options.iconAnchor) ? new L.Point(icon.options.iconAnchor[0], icon.options.iconAnchor[1]) : icon.options.iconAnchor,
 						    scaleFactor = (this.options.dpi / L.print.Provider.DPI);
 
 						style = {
 							externalGraphic: this._getAbsoluteUrl(iconUrl),
-							graphicWidth: (iconSize[0] / scaleFactor),
-							graphicHeight: (iconSize[1] / scaleFactor),
-							graphicXOffset: (-iconAnchor[0] / scaleFactor),
-							graphicYOffset: (-iconAnchor[1] / scaleFactor)
+							graphicWidth: (iconSize.x / scaleFactor),
+							graphicHeight: (iconSize.y / scaleFactor),
+							graphicXOffset: (-iconAnchor.x / scaleFactor),
+							graphicYOffset: (-iconAnchor.y / scaleFactor)
 						};
 					} else {
 						style = this._extractFeatureStyle(feature);
@@ -501,10 +494,12 @@ L.print.Provider = L.Class.extend({
 	onPrintSuccess: function (response) {
 		var url = response.getURL + (L.Browser.ie ? '?inline=true' : '');
 
-		if (L.Browser.ie) {
-			window.open(url);
-		} else {
-			window.location.href = url;
+		if (this.options.autoOpen) {
+			if (L.Browser.ie) {
+				window.open(url);
+			} else {
+				window.location.href = url;
+			}
 		}
 		this.fire('print', {
 			provider: this,
