@@ -239,8 +239,6 @@ L.print.Provider = L.Class.extend({
 					vectors.push(layer);
 				} else if (layer instanceof L.Path && layer.toGeoJSON) {
 					vectors.push(layer);
-				} else if (layer._layers) {
-					enc.concat(this._encodeLayers(layer._layers));
 				} else {
 					continue;
 				}
@@ -248,6 +246,20 @@ L.print.Provider = L.Class.extend({
 		}
 
 		if (vectors.length) {
+			// Markers should always be on top of overlay types			
+			var markers = [],
+			    l = vectors.length;
+
+			while (l--) {
+				if (vectors[l] instanceof L.Marker) {
+					markers.push(vectors[l]);
+					vectors.splice(l, 1);
+				}
+			}
+			if (markers.length) {
+				markers.reverse();
+				vectors = vectors.concat(markers);
+			}
 			enc.push(this._encoders.layers.vector.call(this, vectors));
 		}
 
