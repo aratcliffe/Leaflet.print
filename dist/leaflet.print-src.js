@@ -81,6 +81,10 @@ L.print.Provider = L.Class.extend({
 	print: function (options) {
 		options = L.extend(L.extend({}, this.options), options);
 
+		if (!options.layout || !options.dpi) {
+			throw 'Must provide a layout name and dpi value to print';
+		}
+
 		this.fire('beforeprint', {
 			provider: this,
 			map: this._map
@@ -122,7 +126,11 @@ L.print.Provider = L.Class.extend({
 				url = options.proxy + url;
 			}
 
-			$.ajax({
+			if (this._xhr) {
+				this._xhr.abort();
+			}
+
+			this._xhr = $.ajax({
 				type: 'POST',
 				dataType: 'json',
 				url: url,
@@ -513,6 +521,9 @@ L.print.Provider = L.Class.extend({
 				window.location.href = url;
 			}
 		}
+
+		this._xhr = null;
+
 		this.fire('print', {
 			provider: this,
 			response: response
@@ -520,6 +531,8 @@ L.print.Provider = L.Class.extend({
 	},
 
 	onPrintError: function (jqXHR) {
+		this._xhr = null;
+
 		this.fire('printexception', {
 			provider: this,
 			response: jqXHR

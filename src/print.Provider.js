@@ -76,6 +76,10 @@ L.print.Provider = L.Class.extend({
 	print: function (options) {
 		options = L.extend(L.extend({}, this.options), options);
 
+		if (!options.layout || !options.dpi) {
+			throw 'Must provide a layout name and dpi value to print';
+		}
+
 		this.fire('beforeprint', {
 			provider: this,
 			map: this._map
@@ -117,7 +121,11 @@ L.print.Provider = L.Class.extend({
 				url = options.proxy + url;
 			}
 
-			$.ajax({
+			if (this._xhr) {
+				this._xhr.abort();
+			}
+
+			this._xhr = $.ajax({
 				type: 'POST',
 				dataType: 'json',
 				url: url,
@@ -423,19 +431,19 @@ L.print.Provider = L.Class.extend({
 	},
 
 	_getAbsoluteUrl: function (url) {
-		var a;
+        var a;
 
-		if (L.Browser.ie) {
-			a = document.createElement('<a href="' + url + '"/>');
-			a.style.display = 'none';
-			document.body.appendChild(a);
-			a.href = a.href;
-			document.body.removeChild(a);
-		} else {
-			a = document.createElement('a');
-			a.href = url;
-		}
-		return a.href;
+        if (L.Browser.ie) {
+            a = document.createElement('a');
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.href = url;
+            document.body.removeChild(a);
+        } else {
+            a = document.createElement('a');
+            a.href = url;
+        }
+        return a.href;
 	},
 
 	_projectBounds: function (crs, bounds) {
@@ -508,6 +516,9 @@ L.print.Provider = L.Class.extend({
 				window.location.href = url;
 			}
 		}
+
+		this._xhr = null;
+
 		this.fire('print', {
 			provider: this,
 			response: response
@@ -515,6 +526,8 @@ L.print.Provider = L.Class.extend({
 	},
 
 	onPrintError: function (jqXHR) {
+		this._xhr = null;
+
 		this.fire('printexception', {
 			provider: this,
 			response: jqXHR
