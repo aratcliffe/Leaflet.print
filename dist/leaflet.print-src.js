@@ -436,19 +436,19 @@ L.print.Provider = L.Class.extend({
 	},
 
 	_getAbsoluteUrl: function (url) {
-		var a;
+        var a;
 
-		if (L.Browser.ie) {
-			a = document.createElement('<a href="' + url + '"/>');
-			a.style.display = 'none';
-			document.body.appendChild(a);
-			a.href = a.href;
-			document.body.removeChild(a);
-		} else {
-			a = document.createElement('a');
-			a.href = url;
-		}
-		return a.href;
+        if (L.Browser.ie) {
+            a = document.createElement('a');
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.href = url;
+            document.body.removeChild(a);
+        } else {
+            a = document.createElement('a');
+            a.href = url;
+        }
+        return a.href;
 	},
 
 	_projectBounds: function (crs, bounds) {

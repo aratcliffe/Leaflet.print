@@ -10,8 +10,7 @@
     <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
     <script src="http://cdn.leafletjs.com/leaflet-0.6.3/leaflet.js"></script>
     <script src="../dist/leaflet.print.js"></script>
-    <!--<script src="http://apps2.geosmart.co.nz/mapfish-print/pdf/info.json?var=printConfig"></script>-->
-    <script type="text/javascript" src="http://localhost:8080/print-servlet-1.2.0/pdf/info.json?var=printConfig"></script>
+    <script src="http://apps2.geosmart.co.nz/mapfish-print/pdf/info.json?var=printConfig"></script>
     <script>
       var map,
 	      printProvider,
@@ -34,7 +33,7 @@
           capabilities: printConfig,
           method: 'GET',
 		  dpi: 254,
-		  outputFormat: 'png',
+		  outputFormat: 'pdf',
 		  customParams: {
 			  mapTitle: 'Print Test',
 			  comment: 'Testing Leaflet printing'
