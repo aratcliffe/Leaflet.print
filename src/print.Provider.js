@@ -92,7 +92,7 @@ L.print.Provider = L.Class.extend({
 			dpi: options.dpi,
 			outputFormat: options.outputFormat,
 			outputFilename: options.outputFilename,
-			layers: this._encodeLayers(this._map._layers),
+			layers: this._encodeLayers(this._map),
 			pages: [{
 				center: this._projectCoords(L.print.Provider.SRS, this._map.getCenter()),
 				scale: this._getScale(),
@@ -127,6 +127,8 @@ L.print.Provider = L.Class.extend({
 
 			this._xhr = $.ajax({
 				type: 'POST',
+				contentType: 'application/json; charset=UTF-8',
+				processData: false,
 				dataType: 'json',
 				url: url,
 				data: jsonData,
@@ -181,24 +183,72 @@ L.print.Provider = L.Class.extend({
 		}
 	},
 
+	_getLayers: function (map) {
+		var markers = [],
+		    vectors = [],
+		    tiles = [],
+		    imageOverlays = [],
+		    imageNodes,
+		    pathNodes,
+		    id;
+
+		for (id in map._layers) {
+			if (map._layers.hasOwnProperty(id)) {
+				if (!map._layers.hasOwnProperty(id)) { continue; }
+				var lyr = map._layers[id];
+
+				if (lyr instanceof L.TileLayer.WMS || lyr instanceof L.TileLayer) {
+					tiles.push(lyr);
+				} else if (lyr instanceof L.ImageOverlay) {
+					imageOverlays.push(lyr);
+				} else if (lyr instanceof L.Marker) {
+					markers.push(lyr);
+				} else if (lyr instanceof L.Path && lyr.toGeoJSON) {
+					vectors.push(lyr);
+				}
+			}
+		}
+		markers.sort(function (a, b) {
+			return a._icon.style.zIndex - b._icon.style.zIndex;
+		});
+
+		tiles.sort(function (a, b) {
+			return a._container.style.zIndex - b._container.style.zIndex;
+		});
+
+		imageNodes = [].slice.call(this, map._panes.overlayPane.childNodes);
+		imageOverlays.sort(function (a, b) {
+			return $.inArray(a._image, imageNodes) - $.inArray(b._image, imageNodes);
+		});
+
+		if (map._pathRoot) {
+			pathNodes = [].slice.call(this, map._pathRoot.childNodes);
+			vectors.sort(function (a, b) {
+				return $.inArray(a._container, pathNodes) - $.inArray(b._container, pathNodes);
+			});
+		}
+
+		return tiles.concat(vectors).concat(imageOverlays).concat(markers);
+	},
+
 	_getScale: function () {
 		var map = this._map,
-		    bounds = map.getBounds(),
-		    inchesKm = L.print.Provider.INCHES_PER_METER * 1000,
-		    scales = this._capabilities.scales,
-		    sw = bounds.getSouthWest(),
-		    ne = bounds.getNorthEast(),
-		    halfLat = (sw.lat + ne.lat) / 2,
-		    midLeft = L.latLng(halfLat, sw.lng),
-		    midRight = L.latLng(halfLat, ne.lng),
-		    mwidth = midLeft.distanceTo(midRight),
-		    pxwidth = map.getSize().x,
-		    kmPx = mwidth / pxwidth / 1000,
-		    mscale = (kmPx || 0.000001) * inchesKm * L.print.Provider.DPI,
-		    closest = Number.POSITIVE_INFINITY,
-		    i = scales.length,
-		    diff,
-		    scale;
+		bounds = map.getBounds(),
+		inchesKm = L.print.Provider.INCHES_PER_METER * 1000,
+		scales = this._capabilities.scales,
+		sw = bounds.getSouthWest(),
+		ne = bounds.getNorthEast(),
+		halfLat = (sw.lat + ne.lat) / 2,
+		midLeft = L.latLng(halfLat, sw.lng),
+		midRight = L.latLng(halfLat, ne.lng),
+		mwidth = midLeft.distanceTo(midRight),
+		pxwidth = map.getSize().x,
+		kmPx = mwidth / pxwidth / 1000,
+		mscale = (kmPx || 0.000001) * inchesKm * L.print.Provider.DPI,
+		closest = Number.POSITIVE_INFINITY,
+		i = scales.length,
+		diff,
+		scale;
 
 		while (i--) {
 			diff = Math.abs(mscale - scales[i].value);
@@ -222,50 +272,28 @@ L.print.Provider = L.Class.extend({
 		return layout;
 	},
 
-	_encodeLayers: function (layers) {
+	_encodeLayers: function (map) {
 		var enc = [],
 		    vectors = [],
 		    layer,
-		    id;
+		    i;
 
-		for (id in layers) {
-			if (layers.hasOwnProperty(id)) {
-				layer = layers[id];
-
-				if (layer instanceof L.TileLayer.WMS) {
-					enc.push(this._encoders.layers.tilelayerwms.call(this, layer));
-				} else if (layer instanceof L.TileLayer) {
-					enc.push(this._encoders.layers.tilelayer.call(this, layer));
-				} else if (layer instanceof L.ImageOverlay) {
-					enc.push(this._encoders.layers.image.call(this, layer));
-				} else if (layer instanceof L.Marker) {
-					vectors.push(layer);
-				} else if (layer instanceof L.Path && layer.toGeoJSON) {
-					vectors.push(layer);
-				} else {
-					continue;
-				}
+		var layers = this._getLayers(map);
+		for (i = 0; i < layers.length; i++) {
+			layer = layers[i];
+			if (layer instanceof L.TileLayer.WMS) {
+				enc.push(this._encoders.layers.tilelayerwms.call(this, layer));
+			} else if (layer instanceof L.TileLayer) {
+				enc.push(this._encoders.layers.tilelayer.call(this, layer));
+			} else if (layer instanceof L.ImageOverlay) {
+				enc.push(this._encoders.layers.image.call(this, layer));
+			} else if (layer instanceof L.Marker || (layer instanceof L.Path && layer.toGeoJSON)) {
+				vectors.push(layer);
 			}
 		}
-
 		if (vectors.length) {
-			// Markers should always be on top of overlay types			
-			var markers = [],
-			    l = vectors.length;
-
-			while (l--) {
-				if (vectors[l] instanceof L.Marker) {
-					markers.push(vectors[l]);
-					vectors.splice(l, 1);
-				}
-			}
-			if (markers.length) {
-				markers.reverse();
-				vectors = vectors.concat(markers);
-			}
 			enc.push(this._encoders.layers.vector.call(this, vectors));
 		}
-
 		return enc;
 	},
 
@@ -389,7 +417,7 @@ L.print.Provider = L.Class.extend({
 						encStyles[styleName] = style;
 					}
 
-					featureGeoJson = feature.toGeoJSON();
+					featureGeoJson = (feature instanceof L.Circle) ? this._circleGeoJSON(feature) : feature.toGeoJSON();
 					featureGeoJson.geometry.coordinates = this._projectCoords(L.print.Provider.SRS, featureGeoJson.geometry.coordinates);
 					featureGeoJson.properties._leaflet_style = styleName;
 
@@ -413,6 +441,26 @@ L.print.Provider = L.Class.extend({
 				};
 			}
 		}
+	},
+
+	_circleGeoJSON: function (circle) {
+		var projection = circle._map.options.crs.projection;
+		var earthRadius = 1, i;
+
+		if (projection === L.Projection.SphericalMercator) {
+			earthRadius = 6378137;
+		} else if (projection === L.Projection.Mercator) {
+			earthRadius = projection.R_MAJOR;
+		}
+		var cnt = projection.project(circle.getLatLng());
+		var scale = 1.0 / Math.cos(circle.getLatLng().lat * Math.PI / 180.0);
+		var points = [];
+		for (i = 0; i < 64; i++) {
+			var radian = i * 2.0 * Math.PI / 64.0;
+			var shift = L.point(Math.cos(radian), Math.sin(radian));
+			points.push(projection.unproject(cnt.add(shift.multiplyBy(circle.getRadius() * scale / earthRadius))));
+		}
+		return L.polygon(points).toGeoJSON();
 	},
 
 	_extractFeatureStyle: function (feature) {
