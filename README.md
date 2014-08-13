@@ -49,6 +49,7 @@ Print Provider Options:
 | rotation | Number | `0` | The rotation of the page.
 | customParams | Object | `{}`| Key value pairs of additional parameters that will be sent to the print service.
 | listeners | Object | `undefined` | A set of type/listener pairs, the function context can be passed using the "context" property of the event map e.g. `{beforeprint: onBeforePrint, print: onPrint, context: window}.
+| legends | Bool | `false` | Should WMS legends be generated for all WMS layers? Note that layers with multiple symbols (eg. classified layers) may not work well with MapFish's legend by default. 
 
 Print Control Options:
 
