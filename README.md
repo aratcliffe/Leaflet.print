@@ -4,6 +4,19 @@ Implements the Mapfish print protocol allowing a Leaflet map to be printed using
 
 This plugin is inspired by the printing features of the [GeoExt]( http://geoext.org/lib/GeoExt/data/PrintProvider.html) library. It also borrows from the visual style of the [Leaflet.draw](https://github.com/Leaflet/Leaflet.draw) plugin.
 
+Currently the following layer types are supported:
+
+* Marker
+* TileLayer
+* TileLayer.WMS
+* Mapbox.TileLayer
+* ImageOverlay
+* Polyline
+* MultiPolyline
+* Polygon
+* MultiPolygon
+* Circle
+
 See the [demo](http://aratcliffe.github.io/Leaflet.print/examples/index.html).
 
 *Requires Leaflet 0.6.0 or newer and jQuery.*
@@ -160,7 +173,6 @@ Fired when the provider's `rotation` value is changed via `setRotation()`.
 
 * dashArray style cannot be easily mapped onto OpenLayers `strokeDashstyle` constants so is not supported.
 * `Marker` shadow is not drawn.
-* `Circle` and `CircleMarker` layers are rendered as points as that's the geometry that their `toGeoJSON()` method returns.
 * Rectangle layer does not provide a `toGeoJSON()` method so is not supported.
 
 ##License
