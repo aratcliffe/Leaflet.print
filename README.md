@@ -17,8 +17,6 @@ Currently the following layer types are supported:
 * MultiPolygon
 * Circle
 
-See the [demo](http://aratcliffe.github.io/Leaflet.print/examples/index.html).
-
 *Requires Leaflet 0.6.0 or newer and jQuery.*
 
 ##Using the plugin
