@@ -299,7 +299,7 @@ L.print.Provider = L.Class.extend({
 			layer = layers[i];
 			if (layer instanceof L.TileLayer.WMS) {
 				enc.push(this._encoders.layers.tilelayerwms.call(this, layer));
-			} else if (layer instanceof L.mapbox.TileLayer){
+			} else if (L.mapbox && layer instanceof L.mapbox.TileLayer){
                 enc.push(this._encoders.layers.tilelayermapbox.call(this,layer));
 			} else if (layer instanceof L.TileLayer) {
 				enc.push(this._encoders.layers.tilelayer.call(this, layer));
