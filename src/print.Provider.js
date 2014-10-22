@@ -444,6 +444,11 @@ L.print.Provider = L.Class.extend({
                     resolutions.push(L.print.Provider.MAX_RESOLUTION / Math.pow(2, zoom));
                 }
 
+                var customParams = {};
+                if(typeof layer.options.access_token === 'string' && layer.options.access_token.length > 0){
+                    customParams.access_token = layer.options.access_token;
+                }
+
                 return {
                     // XYZ layer type would be a better fit but is not supported in mapfish plugin for GeoServer
                     // See https://github.com/mapfish/mapfish-print/pull/38
@@ -454,7 +459,8 @@ L.print.Provider = L.Class.extend({
                     tileSize: [layer.options.tileSize, layer.options.tileSize],
                     maxExtent: L.print.Provider.MAX_EXTENT,
                     resolutions: resolutions,
-                    singleTile: false
+                    singleTile: false,
+                    customParams: customParams
                 };
             },
 			image: function (layer) {
