@@ -99,7 +99,7 @@ L.print.Provider = L.Class.extend({
 				scale: this._getScale(),
 				rotation: options.rotation
 			}]
-		}, this.options.customParams,options.customParams,this._makeLegends(this._map))),
+		}, this.options.customParams, options.customParams, this._makeLegends(this._map))),
 		    url;
 
 		if (options.method === 'GET') {
@@ -215,8 +215,8 @@ L.print.Provider = L.Class.extend({
 
         var i;
         // Layers with equal zIndexes can cause problems with mapfish print
-        for(i = 1;i<markers.length;i++){
-            if(markers[i]._icon.style.zIndex <= markers[i - 1]._icon.style.zIndex){
+        for (i = 1; i < markers.length; i++) {
+            if (markers[i]._icon.style.zIndex <= markers[i - 1]._icon.style.zIndex) {
                 markers[i]._icon.style.zIndex = markers[i - 1].icons.style.zIndex + 1;
             }
         }
@@ -226,8 +226,8 @@ L.print.Provider = L.Class.extend({
 		});
 
         // Layers with equal zIndexes can cause problems with mapfish print
-        for(i = 1;i<tiles.length;i++){
-            if(tiles[i]._container.style.zIndex <= tiles[i - 1]._container.style.zIndex){
+        for (i = 1; i < tiles.length; i++) {
+            if (tiles[i]._container.style.zIndex <= tiles[i - 1]._container.style.zIndex) {
                 tiles[i]._container.style.zIndex = tiles[i - 1]._container.style.zIndex + 1;
             }
         }
@@ -299,8 +299,8 @@ L.print.Provider = L.Class.extend({
 			layer = layers[i];
 			if (layer instanceof L.TileLayer.WMS) {
 				enc.push(this._encoders.layers.tilelayerwms.call(this, layer));
-			} else if (L.mapbox && layer instanceof L.mapbox.TileLayer){
-                enc.push(this._encoders.layers.tilelayermapbox.call(this,layer));
+			} else if (L.mapbox && layer instanceof L.mapbox.TileLayer) {
+                enc.push(this._encoders.layers.tilelayermapbox.call(this, layer));
 			} else if (layer instanceof L.TileLayer) {
 				enc.push(this._encoders.layers.tilelayer.call(this, layer));
 			} else if (layer instanceof L.ImageOverlay) {
@@ -315,15 +315,15 @@ L.print.Provider = L.Class.extend({
 		return enc;
 	},
 
-    _makeLegends: function(map,options){
-        if(!this.options.legends){
+    _makeLegends: function (map, options) {
+        if (!this.options.legends) {
             return [];
         }
 
-        var legends = [],legendReq,singlelayers,url,i;
+        var legends = [], legendReq, singlelayers, url, i;
 
         var layers = this._getLayers(map);
-        var layer,oneLegend;
+        var layer, oneLegend;
 		for (i = 0; i < layers.length; i++) {
 			layer = layers[i];
 			if (layer instanceof L.TileLayer.WMS) {
@@ -345,20 +345,20 @@ L.print.Provider = L.Class.extend({
                     'HEIGHT'      : 15
                 };
 
-                legendReq = L.extend(legendReq,options);
+                legendReq = L.extend(legendReq, options);
                 url = L.Util.template(layer._url);
 
                 singlelayers = layer.wmsParams.layers.split(',');
 
                 // If a WMS layer doesn't have multiple server layers, only show one graphic
-                if(singlelayers.length === 1){
+                if (singlelayers.length === 1) {
                     oneLegend.icons = [this._getAbsoluteUrl(url + L.Util.getParamString(legendReq, url, true))];
-                }else{
-                    for(i = 0;i<singlelayers.length;i++){
+                } else {
+                    for (i = 0; i < singlelayers.length; i++) {
                         legendReq.LAYER = singlelayers[i];
                         oneLegend.classes.push({
-                            name:singlelayers[i],
-                            icons:[this._getAbsoluteUrl(url + L.Util.getParamString(legendReq, url, true))]
+                            name: singlelayers[i],
+                            icons: [this._getAbsoluteUrl(url + L.Util.getParamString(legendReq, url, true))]
                         });
                     }
                 }
@@ -367,7 +367,7 @@ L.print.Provider = L.Class.extend({
             }
         }
 
-        return {legends:legends};
+        return {legends: legends};
     },
 
 	_encoders: {
@@ -419,9 +419,9 @@ L.print.Provider = L.Class.extend({
 
 				L.extend(enc, {
 					type: 'WMS',
-					layers: [layerOpts.layers].join(',').split(',').filter(function(x){return x !== "";}), //filter out empty strings from the array
+					layers: [layerOpts.layers].join(',').split(',').filter(function (x) {return x !== ""; }), //filter out empty strings from the array
 					format: layerOpts.format,
-					styles: [layerOpts.styles].join(',').split(',').filter(function(x){return x !== "";}),
+					styles: [layerOpts.styles].join(',').split(',').filter(function (x) {return x !== ""; }),
 					singleTile: true
 				});
 
@@ -437,7 +437,7 @@ L.print.Provider = L.Class.extend({
 				}
 				return enc;
 			},
-            tilelayermapbox: function(layer) {
+            tilelayermapbox: function (layer) {
                 var resolutions = [], zoom;
 
                 for (zoom = 0; zoom <= layer.options.maxZoom; ++zoom) {
@@ -445,7 +445,7 @@ L.print.Provider = L.Class.extend({
                 }
 
                 var customParams = {};
-                if(typeof layer.options.access_token === 'string' && layer.options.access_token.length > 0){
+                if (typeof layer.options.access_token === 'string' && layer.options.access_token.length > 0) {
                     customParams.access_token = layer.options.access_token;
                 }
 
@@ -453,8 +453,8 @@ L.print.Provider = L.Class.extend({
                     // XYZ layer type would be a better fit but is not supported in mapfish plugin for GeoServer
                     // See https://github.com/mapfish/mapfish-print/pull/38
                     type: 'OSM',
-                    baseURL: layer.options.tiles[0].substring(0,layer.options.tiles[0].indexOf('{z}')),
-                    opacity:layer.options.opacity,
+                    baseURL: layer.options.tiles[0].substring(0, layer.options.tiles[0].indexOf('{z}')),
+                    opacity: layer.options.opacity,
                     extension: 'png',
                     tileSize: [layer.options.tileSize, layer.options.tileSize],
                     maxExtent: L.print.Provider.MAX_EXTENT,
