@@ -234,13 +234,13 @@ L.print.Provider = L.Class.extend({
 
 		imageNodes = [].slice.call(this, map._panes.overlayPane.childNodes);
 		imageOverlays.sort(function (a, b) {
-			return $.inArray(a._image, imageNodes) - $.inArray(b._image, imageNodes);
+			return imageNodes.indexOf(a._image) - imageNodes.indexOf(b._image);
 		});
 
 		if (map._pathRoot) {
 			pathNodes = [].slice.call(this, map._pathRoot.childNodes);
 			vectors.sort(function (a, b) {
-				return $.inArray(a._container, pathNodes) - $.inArray(b._container, pathNodes);
+				return pathNodes.indexOf(a._container) - pathNodes.indexOf(b._container);
 			});
 		}
 
