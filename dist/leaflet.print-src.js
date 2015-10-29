@@ -272,10 +272,10 @@ L.print.Provider = L.Class.extend({
 		scale;
 
 		while (i--) {
-			diff = Math.abs(mscale - scales[i].value);
+			diff = Math.abs(mscale - Number(scales[i].value));
 			if (diff < closest) {
 				closest = diff;
-				scale = parseInt(scales[i].value, 10);
+				scale = parseInt(Number(scales[i].value), 10);
 			}
 		}
 		return scale;

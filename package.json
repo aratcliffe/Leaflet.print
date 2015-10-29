@@ -1,0 +1,18 @@
+{
+  "name": "leaflet.print",
+  "version": "1.0.0",
+  "description": "Plugin for printing a Leaflet map using either Mapfish or the GeoServer print module",
+  "devDependencies": {
+    "jshint": "^2.8.0",
+    "uglify-js": "^2.5.0"      
+  },
+  "main": "dist/leaflet.print.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aratcliffe/Leaflet.print.git"
+  },
+  "keywords": [
+    "gis",
+    "map"
+  ]
+}
