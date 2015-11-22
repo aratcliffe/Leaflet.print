@@ -129,10 +129,12 @@ L.Control.Print = L.Control.extend({
 	},
 
 	_showActionsToolbar: function () {
-		L.DomUtil.addClass(this._toolbarContainer, 'leaflet-print-actions-visible');
-		this._actionsContainer.style.display = 'block';
-
-		this._actionsVisible = true;
+        if (this._actionsContainer) {
+		    L.DomUtil.addClass(this._toolbarContainer, 'leaflet-print-actions-visible');
+		    this._actionsContainer.style.display = 'block';
+            
+		    this._actionsVisible = true;
+        }
 	},
 
 	_hideActionsToolbar: function () {
