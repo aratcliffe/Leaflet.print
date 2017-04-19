@@ -1,4 +1,4 @@
-#Leaflet.print
+# Leaflet.print
 ==============
 Implements the Mapfish print protocol allowing a Leaflet map to be printed using either the [Mapfish](https://github.com/mapfish/mapfish-print) or [GeoServer](http://geoserver.org) print module.
 
@@ -19,11 +19,11 @@ Currently the following layer types are supported:
 
 *Requires Leaflet 0.6.0 or newer and jQuery.*
 
-##Using the plugin
+## Using the plugin
 
 The plugin consists of a print provider, which implements the protocol used by the MapFish print module and optionally loads the service capabilities document, and a map control that prints the current map view using the user's choice of document layout.
 
-###Usage
+### Usage
 Create a print provider, optionally create a print control and add it to the map.
 
 ```javascript
@@ -41,7 +41,7 @@ map.addControl(printControl);
 
 ```
 
-###All Options
+### All Options
 Print Provider Options:
 
 | Option | Type | Default | Description
@@ -69,7 +69,7 @@ Print Control Options:
 | position | String | `'topleft'` | The initial position of the control (one of the map corners). See [control positions](http://leafletjs.com/reference.html#control-positions).
 | showLayouts | Bool | `true` | If true the layouts supported by the print service will be displayed when the user clicks the print control, otherwise the map will be printed using the layout the print provider was configured with.
 
-###Methods
+### Methods
 
 Print Provider Methods:
 ````javascript
@@ -101,11 +101,11 @@ setRotation()
 ````
 Sets the rotation of the printed map.
 
-###Events
+### Events
 
 The following events are emitted by the print provider and can be listened for using the standard [Leaflet events methods](http://leafletjs.com/reference.html#events) or by passing an event map as the `listeners` config option.
 
-####capabilitiesload
+#### capabilitiesload
 
 Fired when the print service capabilities have been loaded by a call to `loadCapabilities()`.
 
@@ -114,7 +114,7 @@ Fired when the print service capabilities have been loaded by a call to `loadCap
 | provider | L.print.Provider | The print provider.
 | capabilities | Object | The service capabilities.
 
-####beforeprint
+#### beforeprint
 
 Fired before the printed map is requested.
 
@@ -123,7 +123,7 @@ Fired before the printed map is requested.
 | provider | L.print.Provider | The print provider.
 | map | [L.Map](http://leafletjs.com/reference.html#map-class) | The map to be printed.
 
-####print
+#### print
 
 Fired immediately after the printed map has been requested if using HTTP GET or upon success if using HTTP POST.
 
@@ -132,7 +132,7 @@ Fired immediately after the printed map has been requested if using HTTP GET or 
 | provider | L.print.Provider | The print provider.
 | response | Object | The reponse object returned by the print service. The url for the generated map is accessed though the `getURL` property.
 
-####printexception
+#### printexception
 
 Fired when the print request fails.
 
@@ -141,7 +141,7 @@ Fired when the print request fails.
 | provider | L.print.Provider | The print provider.
 | response | [jqXHR](http://api.jquery.com/jQuery.ajax/#jqXHR) | The jqXHR object.
 
-####dpichange
+#### dpichange
 
 Fired when the provider's `dpi` value is changed via `setDpi()`.
 
@@ -150,7 +150,7 @@ Fired when the provider's `dpi` value is changed via `setDpi()`.
 | provider | L.print.Provider | The print provider.
 | dpi | Number | The new dpi value.
 
-####layoutchange
+#### layoutchange
 
 Fired when the provider's `layout` value is changed via `setLayout()`.
 
@@ -159,7 +159,7 @@ Fired when the provider's `layout` value is changed via `setLayout()`.
 | provider | L.print.Provider | The print provider.
 | layout | String | The new layout value.
 
-####rotationchange
+#### rotationchange
 
 Fired when the provider's `rotation` value is changed via `setRotation()`.
 
@@ -168,11 +168,11 @@ Fired when the provider's `rotation` value is changed via `setRotation()`.
 | provider | L.print.Provider | The print provider.
 | rotation | Number | The new rotation value.
 
-##Limitations
+## Limitations
 
 * dashArray style cannot be easily mapped onto OpenLayers `strokeDashstyle` constants so is not supported.
 * `Marker` shadow is not drawn.
 * Rectangle layer does not provide a `toGeoJSON()` method so is not supported.
 
-##License
+## License
 This software is released under the [MIT licence](http://www.opensource.org/licenses/mit-license.php).
